@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace GeekFix.Infrastructure.Migrations
+namespace GeekFix.Infrastructure.Persistence.Migrations
 {
     public partial class PostgreSqlUpdate : Migration
     {

@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace GeekFix.Infrastructure.Migrations
+namespace GeekFix.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200714070911_PostgreSqlUpdate")]
+    [Migration("20200714234425_PostgreSqlUpdate")]
     partial class PostgreSqlUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
