@@ -1,32 +1,33 @@
 ﻿using GeekFix.Domain.Entities;
 using GeekFix.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace GeekFix.Infrastructure.Persistence
 {
-    public static class ApplicationDbContextSeed
+  public static class ApplicationDbContextSeed
+  {
+    public static async Task SeedDefaultUserAsync(UserManager<ApplicationUser> userManager)
     {
-        public static async Task SeedDefaultUserAsync(UserManager<ApplicationUser> userManager)
-        {
-            var defaultUser = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
+      var defaultUser = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
 
-            if (userManager.Users.All(u => u.UserName != defaultUser.UserName))
-            {
-                await userManager.CreateAsync(defaultUser, "Administrator1!");
-            }
-        }
+      if (userManager.Users.All(u => u.UserName != defaultUser.UserName))
+      {
+        await userManager.CreateAsync(defaultUser, "Administrator1!");
+      }
+    }
 
-        public static async Task SeedSampleDataAsync(ApplicationDbContext context)
+    public static async Task SeedSampleDataAsync(ApplicationDbContext context)
+    {
+      // Seed, if necessary
+      if (!context.TodoLists.Any())
+      {
+        context.TodoLists.Add(new TodoList
         {
-            // Seed, if necessary
-            if (!context.TodoLists.Any())
-            {
-                context.TodoLists.Add(new TodoList
-                {
-                    Title = "Shopping",
-                    Items =
+          Title = "Shopping",
+          Items =
                     {
                         new TodoItem { Title = "Apples", Done = true },
                         new TodoItem { Title = "Milk", Done = true },
@@ -37,10 +38,10 @@ namespace GeekFix.Infrastructure.Persistence
                         new TodoItem { Title = "Tuna" },
                         new TodoItem { Title = "Water" }
                     }
-                });
+        });
 
-                await context.SaveChangesAsync();
-            }
-        }
+        await context.SaveChangesAsync();
+      }
     }
+  }
 }
