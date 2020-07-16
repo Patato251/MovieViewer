@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "Sw87by23eapq1UmfchoErTfBq0fG5RPstALSSsOs4aP0fxCfRcLIAaMGvTTNpcXNrNNKct/TkgaiSCEmufpYuA==",
+  "dgSpecHash": "M1gbaLt7Hl7zPzLs3O3J9XUTVMSrUFTzGaTjti9XsD1mYASdo1gXQOKokKYZ+mJKbuPmHYu7GUpUgD8p9qfXdg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Patrick Le\\Desktop\\Sealadder\\testproj\\TestProj.API\\TestProj.API.csproj",
+  "projectFilePath": "C:\\Users\\Patrick Le\\Desktop\\Sealadder\\G_AngularBase\\MovieViewer\\testproj\\TestProj.API\\TestProj.API.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Patrick Le\\.nuget\\packages\\automapper\\10.0.0\\automapper.10.0.0.nupkg.sha512",
+    "C:\\Users\\Patrick Le\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.0.0\\automapper.extensions.microsoft.dependencyinjection.8.0.0.nupkg.sha512",
     "C:\\Users\\Patrick Le\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.5\\microsoft.aspnetcore.jsonpatch.3.1.5.nupkg.sha512",
     "C:\\Users\\Patrick Le\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.5\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.5.nupkg.sha512",
     "C:\\Users\\Patrick Le\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
@@ -42,6 +44,7 @@
     "C:\\Users\\Patrick Le\\.nuget\\packages\\system.componentmodel.annotations\\4.7.0\\system.componentmodel.annotations.4.7.0.nupkg.sha512",
     "C:\\Users\\Patrick Le\\.nuget\\packages\\system.diagnostics.diagnosticsource\\4.7.1\\system.diagnostics.diagnosticsource.4.7.1.nupkg.sha512",
     "C:\\Users\\Patrick Le\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
+    "C:\\Users\\Patrick Le\\.nuget\\packages\\system.reflection.emit\\4.7.0\\system.reflection.emit.4.7.0.nupkg.sha512",
     "C:\\Users\\Patrick Le\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.6.0\\system.runtime.compilerservices.unsafe.4.6.0.nupkg.sha512",
     "C:\\Users\\Patrick Le\\.nuget\\packages\\system.text.json\\4.7.2\\system.text.json.4.7.2.nupkg.sha512"
   ],
