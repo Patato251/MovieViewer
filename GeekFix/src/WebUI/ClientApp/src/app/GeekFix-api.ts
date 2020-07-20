@@ -15,8 +15,9 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ITmDbDataClient {
-    getDiscover(searchtext: string | null, page: number): Observable<SearchResult>;
-    getMovie(searchtext: string | null, page: number): Observable<SearchResult>;
+    getDiscover(searchtext: string | null, page: number): Observable<SearchInfo>;
+    getSearch(searchtext: string | null, page: number): Observable<SearchInfo>;
+    getMovie(id: number): Observable<MovieInfo>;
 }
 
 @Injectable({
@@ -32,7 +33,7 @@ export class TmDbDataClient implements ITmDbDataClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    getDiscover(searchtext: string | null, page: number): Observable<SearchResult> {
+    getDiscover(searchtext: string | null, page: number): Observable<SearchInfo> {
         let url_ = this.baseUrl + "/api/TmDbData/discover/{searchtext}/{page}";
         if (searchtext === undefined || searchtext === null)
             throw new Error("The parameter 'searchtext' must be defined.");
@@ -57,14 +58,14 @@ export class TmDbDataClient implements ITmDbDataClient {
                 try {
                     return this.processGetDiscover(<any>response_);
                 } catch (e) {
-                    return <Observable<SearchResult>><any>_observableThrow(e);
+                    return <Observable<SearchInfo>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<SearchResult>><any>_observableThrow(response_);
+                return <Observable<SearchInfo>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetDiscover(response: HttpResponseBase): Observable<SearchResult> {
+    protected processGetDiscover(response: HttpResponseBase): Observable<SearchInfo> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -75,7 +76,7 @@ export class TmDbDataClient implements ITmDbDataClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SearchResult.fromJS(resultData200);
+            result200 = SearchInfo.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -83,11 +84,11 @@ export class TmDbDataClient implements ITmDbDataClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<SearchResult>(<any>null);
+        return _observableOf<SearchInfo>(<any>null);
     }
 
-    getMovie(searchtext: string | null, page: number): Observable<SearchResult> {
-        let url_ = this.baseUrl + "/api/TmDbData/movie/{searchtext}/{page}";
+    getSearch(searchtext: string | null, page: number): Observable<SearchInfo> {
+        let url_ = this.baseUrl + "/api/TmDbData/search/{searchtext}/{page}";
         if (searchtext === undefined || searchtext === null)
             throw new Error("The parameter 'searchtext' must be defined.");
         url_ = url_.replace("{searchtext}", encodeURIComponent("" + searchtext)); 
@@ -105,20 +106,20 @@ export class TmDbDataClient implements ITmDbDataClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetMovie(response_);
+            return this.processGetSearch(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetMovie(<any>response_);
+                    return this.processGetSearch(<any>response_);
                 } catch (e) {
-                    return <Observable<SearchResult>><any>_observableThrow(e);
+                    return <Observable<SearchInfo>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<SearchResult>><any>_observableThrow(response_);
+                return <Observable<SearchInfo>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetMovie(response: HttpResponseBase): Observable<SearchResult> {
+    protected processGetSearch(response: HttpResponseBase): Observable<SearchInfo> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -129,7 +130,7 @@ export class TmDbDataClient implements ITmDbDataClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SearchResult.fromJS(resultData200);
+            result200 = SearchInfo.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -137,7 +138,58 @@ export class TmDbDataClient implements ITmDbDataClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<SearchResult>(<any>null);
+        return _observableOf<SearchInfo>(<any>null);
+    }
+
+    getMovie(id: number): Observable<MovieInfo> {
+        let url_ = this.baseUrl + "/api/TmDbData/movie/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMovie(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMovie(<any>response_);
+                } catch (e) {
+                    return <Observable<MovieInfo>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<MovieInfo>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetMovie(response: HttpResponseBase): Observable<MovieInfo> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = MovieInfo.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<MovieInfo>(<any>null);
     }
 }
 
@@ -713,13 +765,13 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class SearchResult implements ISearchResult {
+export class SearchInfo implements ISearchInfo {
     page?: number;
     total_results?: number;
     total_pages?: number;
-    results?: Result[] | undefined;
+    results?: SearchResult[] | undefined;
 
-    constructor(data?: ISearchResult) {
+    constructor(data?: ISearchInfo) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -736,14 +788,14 @@ export class SearchResult implements ISearchResult {
             if (Array.isArray(_data["results"])) {
                 this.results = [] as any;
                 for (let item of _data["results"])
-                    this.results!.push(Result.fromJS(item));
+                    this.results!.push(SearchResult.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): SearchResult {
+    static fromJS(data: any): SearchInfo {
         data = typeof data === 'object' ? data : {};
-        let result = new SearchResult();
+        let result = new SearchInfo();
         result.init(data);
         return result;
     }
@@ -762,14 +814,14 @@ export class SearchResult implements ISearchResult {
     }
 }
 
-export interface ISearchResult {
+export interface ISearchInfo {
     page?: number;
     total_results?: number;
     total_pages?: number;
-    results?: Result[] | undefined;
+    results?: SearchResult[] | undefined;
 }
 
-export class Result implements IResult {
+export class SearchResult implements ISearchResult {
     popularity?: number;
     id?: number;
     video?: boolean;
@@ -785,7 +837,7 @@ export class Result implements IResult {
     overview?: string | undefined;
     poster_path?: string | undefined;
 
-    constructor(data?: IResult) {
+    constructor(data?: ISearchResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -817,9 +869,9 @@ export class Result implements IResult {
         }
     }
 
-    static fromJS(data: any): Result {
+    static fromJS(data: any): SearchResult {
         data = typeof data === 'object' ? data : {};
-        let result = new Result();
+        let result = new SearchResult();
         result.init(data);
         return result;
     }
@@ -848,7 +900,7 @@ export class Result implements IResult {
     }
 }
 
-export interface IResult {
+export interface ISearchResult {
     popularity?: number;
     id?: number;
     video?: boolean;
@@ -863,6 +915,386 @@ export interface IResult {
     adult?: boolean;
     overview?: string | undefined;
     poster_path?: string | undefined;
+}
+
+export class MovieInfo implements IMovieInfo {
+    adult?: boolean;
+    backdrop_path?: string | undefined;
+    belongs_to_collection?: CollectionInfo | undefined;
+    budget?: number;
+    genres?: Genre[] | undefined;
+    homepage?: string | undefined;
+    id?: number;
+    imdb_id?: string | undefined;
+    original_language?: string | undefined;
+    original_title?: string | undefined;
+    overview?: string | undefined;
+    popularity?: number;
+    poster_path?: string | undefined;
+    production_companies?: ProductionCompany[] | undefined;
+    production_countries?: ProductionInfo[] | undefined;
+    release_date?: string | undefined;
+    revenue?: number;
+    runtime?: number;
+    spoken_languages?: Language[] | undefined;
+    status?: string | undefined;
+    tagline?: string | undefined;
+    title?: string | undefined;
+    video?: boolean;
+    vote_average?: number;
+    vote_count?: number;
+
+    constructor(data?: IMovieInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.adult = _data["adult"];
+            this.backdrop_path = _data["backdrop_path"];
+            this.belongs_to_collection = _data["belongs_to_collection"] ? CollectionInfo.fromJS(_data["belongs_to_collection"]) : <any>undefined;
+            this.budget = _data["budget"];
+            if (Array.isArray(_data["genres"])) {
+                this.genres = [] as any;
+                for (let item of _data["genres"])
+                    this.genres!.push(Genre.fromJS(item));
+            }
+            this.homepage = _data["homepage"];
+            this.id = _data["id"];
+            this.imdb_id = _data["imdb_id"];
+            this.original_language = _data["original_language"];
+            this.original_title = _data["original_title"];
+            this.overview = _data["overview"];
+            this.popularity = _data["popularity"];
+            this.poster_path = _data["poster_path"];
+            if (Array.isArray(_data["production_companies"])) {
+                this.production_companies = [] as any;
+                for (let item of _data["production_companies"])
+                    this.production_companies!.push(ProductionCompany.fromJS(item));
+            }
+            if (Array.isArray(_data["production_countries"])) {
+                this.production_countries = [] as any;
+                for (let item of _data["production_countries"])
+                    this.production_countries!.push(ProductionInfo.fromJS(item));
+            }
+            this.release_date = _data["release_date"];
+            this.revenue = _data["revenue"];
+            this.runtime = _data["runtime"];
+            if (Array.isArray(_data["spoken_languages"])) {
+                this.spoken_languages = [] as any;
+                for (let item of _data["spoken_languages"])
+                    this.spoken_languages!.push(Language.fromJS(item));
+            }
+            this.status = _data["status"];
+            this.tagline = _data["tagline"];
+            this.title = _data["title"];
+            this.video = _data["video"];
+            this.vote_average = _data["vote_average"];
+            this.vote_count = _data["vote_count"];
+        }
+    }
+
+    static fromJS(data: any): MovieInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new MovieInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["adult"] = this.adult;
+        data["backdrop_path"] = this.backdrop_path;
+        data["belongs_to_collection"] = this.belongs_to_collection ? this.belongs_to_collection.toJSON() : <any>undefined;
+        data["budget"] = this.budget;
+        if (Array.isArray(this.genres)) {
+            data["genres"] = [];
+            for (let item of this.genres)
+                data["genres"].push(item.toJSON());
+        }
+        data["homepage"] = this.homepage;
+        data["id"] = this.id;
+        data["imdb_id"] = this.imdb_id;
+        data["original_language"] = this.original_language;
+        data["original_title"] = this.original_title;
+        data["overview"] = this.overview;
+        data["popularity"] = this.popularity;
+        data["poster_path"] = this.poster_path;
+        if (Array.isArray(this.production_companies)) {
+            data["production_companies"] = [];
+            for (let item of this.production_companies)
+                data["production_companies"].push(item.toJSON());
+        }
+        if (Array.isArray(this.production_countries)) {
+            data["production_countries"] = [];
+            for (let item of this.production_countries)
+                data["production_countries"].push(item.toJSON());
+        }
+        data["release_date"] = this.release_date;
+        data["revenue"] = this.revenue;
+        data["runtime"] = this.runtime;
+        if (Array.isArray(this.spoken_languages)) {
+            data["spoken_languages"] = [];
+            for (let item of this.spoken_languages)
+                data["spoken_languages"].push(item.toJSON());
+        }
+        data["status"] = this.status;
+        data["tagline"] = this.tagline;
+        data["title"] = this.title;
+        data["video"] = this.video;
+        data["vote_average"] = this.vote_average;
+        data["vote_count"] = this.vote_count;
+        return data; 
+    }
+}
+
+export interface IMovieInfo {
+    adult?: boolean;
+    backdrop_path?: string | undefined;
+    belongs_to_collection?: CollectionInfo | undefined;
+    budget?: number;
+    genres?: Genre[] | undefined;
+    homepage?: string | undefined;
+    id?: number;
+    imdb_id?: string | undefined;
+    original_language?: string | undefined;
+    original_title?: string | undefined;
+    overview?: string | undefined;
+    popularity?: number;
+    poster_path?: string | undefined;
+    production_companies?: ProductionCompany[] | undefined;
+    production_countries?: ProductionInfo[] | undefined;
+    release_date?: string | undefined;
+    revenue?: number;
+    runtime?: number;
+    spoken_languages?: Language[] | undefined;
+    status?: string | undefined;
+    tagline?: string | undefined;
+    title?: string | undefined;
+    video?: boolean;
+    vote_average?: number;
+    vote_count?: number;
+}
+
+export class CollectionInfo implements ICollectionInfo {
+    id?: number;
+    name?: string | undefined;
+    poster_path?: string | undefined;
+    backdrop_path?: string | undefined;
+
+    constructor(data?: ICollectionInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.poster_path = _data["poster_path"];
+            this.backdrop_path = _data["backdrop_path"];
+        }
+    }
+
+    static fromJS(data: any): CollectionInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new CollectionInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["poster_path"] = this.poster_path;
+        data["backdrop_path"] = this.backdrop_path;
+        return data; 
+    }
+}
+
+export interface ICollectionInfo {
+    id?: number;
+    name?: string | undefined;
+    poster_path?: string | undefined;
+    backdrop_path?: string | undefined;
+}
+
+export class Genre implements IGenre {
+    id?: number;
+    name?: string | undefined;
+
+    constructor(data?: IGenre) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): Genre {
+        data = typeof data === 'object' ? data : {};
+        let result = new Genre();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface IGenre {
+    id?: number;
+    name?: string | undefined;
+}
+
+export class ProductionCompany implements IProductionCompany {
+    id?: number;
+    logo_path?: string | undefined;
+    name?: string | undefined;
+    origin_country?: string | undefined;
+
+    constructor(data?: IProductionCompany) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.logo_path = _data["logo_path"];
+            this.name = _data["name"];
+            this.origin_country = _data["origin_country"];
+        }
+    }
+
+    static fromJS(data: any): ProductionCompany {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductionCompany();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["logo_path"] = this.logo_path;
+        data["name"] = this.name;
+        data["origin_country"] = this.origin_country;
+        return data; 
+    }
+}
+
+export interface IProductionCompany {
+    id?: number;
+    logo_path?: string | undefined;
+    name?: string | undefined;
+    origin_country?: string | undefined;
+}
+
+export class ProductionInfo implements IProductionInfo {
+    iso_3166_1?: string | undefined;
+    name?: string | undefined;
+
+    constructor(data?: IProductionInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.iso_3166_1 = _data["iso_3166_1"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): ProductionInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductionInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["iso_3166_1"] = this.iso_3166_1;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface IProductionInfo {
+    iso_3166_1?: string | undefined;
+    name?: string | undefined;
+}
+
+export class Language implements ILanguage {
+    iso_639_1?: string | undefined;
+    name?: string | undefined;
+
+    constructor(data?: ILanguage) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.iso_639_1 = _data["iso_639_1"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): Language {
+        data = typeof data === 'object' ? data : {};
+        let result = new Language();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["iso_639_1"] = this.iso_639_1;
+        data["name"] = this.name;
+        return data; 
+    }
+}
+
+export interface ILanguage {
+    iso_639_1?: string | undefined;
+    name?: string | undefined;
 }
 
 export class CreateTodoItemCommand implements ICreateTodoItemCommand {

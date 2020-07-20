@@ -1,14 +1,17 @@
-using System.Threading.Tasks;
-using GeekFix.Domain.Entities;
+using GeekFix.Domain.Entities.Detailed;
+using GeekFix.Domain.Entities.Search;
 
 namespace GeekFix.Application.Common.Interfaces
 {
   public interface ITmDbData
   {
-    // Call API for Movies
-    SearchResult CallApiSearch(string searchText, int page);
+    // Call API for general search
+    SearchInfo CallApiSearch(string searchText, int page);
 
     // Call API for Discover
-    SearchResult CallApiDiscover(string searchText, int page);
+    SearchInfo CallApiDiscover(string searchText, int page);
+
+    // Call API for Detailed Movie Info 
+    MovieInfo CallApiMovie(int id);
   }
 }

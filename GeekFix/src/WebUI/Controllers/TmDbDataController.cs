@@ -1,6 +1,6 @@
-using System.Threading.Tasks;
 using GeekFix.Application.Common.Interfaces;
-using GeekFix.Domain.Entities;
+using GeekFix.Domain.Entities.Detailed;
+using GeekFix.Domain.Entities.Search;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeekFix.WebUI.Controllers
@@ -16,7 +16,7 @@ namespace GeekFix.WebUI.Controllers
 
     // Get A specific page of Discover 
     [HttpGet("discover/{searchtext}/{page}")]
-    public SearchResult GetDiscover(string searchtext, int page)
+    public SearchInfo GetDiscover(string searchtext, int page)
     {
       var pageResult = _data.CallApiDiscover(searchtext, page);
 
@@ -24,12 +24,21 @@ namespace GeekFix.WebUI.Controllers
     }
 
     // Get a movie search with page
-    [HttpGet("movie/{searchtext}/{page}")]
-    public SearchResult GetSearch(string searchtext, int page)
+    [HttpGet("search/{searchtext}/{page}")]
+    public SearchInfo GetSearch(string searchtext, int page)
     {
-      SearchResult pageResult = _data.CallApiSearch(searchtext, page);
+      SearchInfo pageResult = _data.CallApiSearch(searchtext, page);
 
       return pageResult;
+    }
+
+    // Get a specific movie according to Id
+    [HttpGet("movie/{id}")]
+    public MovieInfo GetMovie(int id)
+    {
+      MovieInfo movieResult = _data.CallApiMovie(id);
+
+      return movieResult; 
     }
   }
 }
