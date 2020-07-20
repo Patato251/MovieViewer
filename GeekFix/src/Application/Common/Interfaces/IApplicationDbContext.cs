@@ -11,7 +11,7 @@ namespace GeekFix.Application.Common.Interfaces
 
         DbSet<TodoItem> TodoItems { get; set; }
 
-        DbSet<Movie> Movies { get; set; }
+        // DbSet<Result> Results { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

@@ -2,6 +2,7 @@
 using GeekFix.Infrastructure.Files;
 using GeekFix.Infrastructure.Identity;
 using GeekFix.Infrastructure.Persistence;
+using GeekFix.Infrastructure.Repository;
 using GeekFix.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,8 @@ namespace GeekFix.Infrastructure
             services.AddTransient<IDateTime, DateTimeService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
+
+            services.AddTransient<ITmDbData, TmDbData>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

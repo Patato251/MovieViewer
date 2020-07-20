@@ -34,7 +34,7 @@ namespace GeekFix.Infrastructure.Persistence
 
     public DbSet<TodoItem> TodoItems { get; set; }
 
-    public DbSet<Movie> Movies { get; set; }
+    // public DbSet<Result> Results { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
