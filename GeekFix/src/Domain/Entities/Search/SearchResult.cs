@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using GeekFix.Domain.Common;
 
 namespace GeekFix.Domain.Entities.Search
 {
-  public class SearchResult
+  public class SearchResult : AuditableEntity
   {
     public double popularity { get; set; }
     public int id { get; set; }

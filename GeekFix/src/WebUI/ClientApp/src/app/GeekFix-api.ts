@@ -17,7 +17,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 export interface ITmDbDataClient {
     getDiscover(searchtext: string | null, page: number): Observable<SearchInfo>;
     getSearch(searchtext: string | null, page: number): Observable<SearchInfo>;
-    getMovie(id: number): Observable<MovieInfo>;
+    getMovie(id: number | undefined): Observable<MovieInfo>;
 }
 
 @Injectable({
@@ -141,11 +141,12 @@ export class TmDbDataClient implements ITmDbDataClient {
         return _observableOf<SearchInfo>(<any>null);
     }
 
-    getMovie(id: number): Observable<MovieInfo> {
-        let url_ = this.baseUrl + "/api/TmDbData/movie/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id)); 
+    getMovie(id: number | undefined): Observable<MovieInfo> {
+        let url_ = this.baseUrl + "/api/TmDbData?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -765,13 +766,13 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class SearchInfo implements ISearchInfo {
-    page?: number;
-    total_results?: number;
-    total_pages?: number;
-    results?: SearchResult[] | undefined;
+export abstract class AuditableEntity implements IAuditableEntity {
+    createdBy?: string | undefined;
+    created?: Date;
+    lastModifiedBy?: string | undefined;
+    lastModified?: Date | undefined;
 
-    constructor(data?: ISearchInfo) {
+    constructor(data?: IAuditableEntity) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -781,6 +782,48 @@ export class SearchInfo implements ISearchInfo {
     }
 
     init(_data?: any) {
+        if (_data) {
+            this.createdBy = _data["createdBy"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AuditableEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'AuditableEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["createdBy"] = this.createdBy;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IAuditableEntity {
+    createdBy?: string | undefined;
+    created?: Date;
+    lastModifiedBy?: string | undefined;
+    lastModified?: Date | undefined;
+}
+
+export class SearchInfo extends AuditableEntity implements ISearchInfo {
+    page?: number;
+    total_results?: number;
+    total_pages?: number;
+    results?: SearchResult[] | undefined;
+
+    constructor(data?: ISearchInfo) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.page = _data["page"];
             this.total_results = _data["total_results"];
@@ -810,18 +853,19 @@ export class SearchInfo implements ISearchInfo {
             for (let item of this.results)
                 data["results"].push(item.toJSON());
         }
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface ISearchInfo {
+export interface ISearchInfo extends IAuditableEntity {
     page?: number;
     total_results?: number;
     total_pages?: number;
     results?: SearchResult[] | undefined;
 }
 
-export class SearchResult implements ISearchResult {
+export class SearchResult extends AuditableEntity implements ISearchResult {
     popularity?: number;
     id?: number;
     video?: boolean;
@@ -838,15 +882,11 @@ export class SearchResult implements ISearchResult {
     poster_path?: string | undefined;
 
     constructor(data?: ISearchResult) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.popularity = _data["popularity"];
             this.id = _data["id"];
@@ -896,11 +936,12 @@ export class SearchResult implements ISearchResult {
         data["adult"] = this.adult;
         data["overview"] = this.overview;
         data["poster_path"] = this.poster_path;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface ISearchResult {
+export interface ISearchResult extends IAuditableEntity {
     popularity?: number;
     id?: number;
     video?: boolean;
@@ -917,7 +958,7 @@ export interface ISearchResult {
     poster_path?: string | undefined;
 }
 
-export class MovieInfo implements IMovieInfo {
+export class MovieInfo extends AuditableEntity implements IMovieInfo {
     adult?: boolean;
     backdrop_path?: string | undefined;
     belongs_to_collection?: CollectionInfo | undefined;
@@ -945,15 +986,11 @@ export class MovieInfo implements IMovieInfo {
     vote_count?: number;
 
     constructor(data?: IMovieInfo) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.adult = _data["adult"];
             this.backdrop_path = _data["backdrop_path"];
@@ -1049,11 +1086,12 @@ export class MovieInfo implements IMovieInfo {
         data["video"] = this.video;
         data["vote_average"] = this.vote_average;
         data["vote_count"] = this.vote_count;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface IMovieInfo {
+export interface IMovieInfo extends IAuditableEntity {
     adult?: boolean;
     backdrop_path?: string | undefined;
     belongs_to_collection?: CollectionInfo | undefined;
@@ -1081,22 +1119,18 @@ export interface IMovieInfo {
     vote_count?: number;
 }
 
-export class CollectionInfo implements ICollectionInfo {
+export class CollectionInfo extends AuditableEntity implements ICollectionInfo {
     id?: number;
     name?: string | undefined;
     poster_path?: string | undefined;
     backdrop_path?: string | undefined;
 
     constructor(data?: ICollectionInfo) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
@@ -1118,31 +1152,28 @@ export class CollectionInfo implements ICollectionInfo {
         data["name"] = this.name;
         data["poster_path"] = this.poster_path;
         data["backdrop_path"] = this.backdrop_path;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface ICollectionInfo {
+export interface ICollectionInfo extends IAuditableEntity {
     id?: number;
     name?: string | undefined;
     poster_path?: string | undefined;
     backdrop_path?: string | undefined;
 }
 
-export class Genre implements IGenre {
+export class Genre extends AuditableEntity implements IGenre {
     id?: number;
     name?: string | undefined;
 
     constructor(data?: IGenre) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
@@ -1160,31 +1191,28 @@ export class Genre implements IGenre {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface IGenre {
+export interface IGenre extends IAuditableEntity {
     id?: number;
     name?: string | undefined;
 }
 
-export class ProductionCompany implements IProductionCompany {
+export class ProductionCompany extends AuditableEntity implements IProductionCompany {
     id?: number;
     logo_path?: string | undefined;
     name?: string | undefined;
     origin_country?: string | undefined;
 
     constructor(data?: IProductionCompany) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.id = _data["id"];
             this.logo_path = _data["logo_path"];
@@ -1206,31 +1234,28 @@ export class ProductionCompany implements IProductionCompany {
         data["logo_path"] = this.logo_path;
         data["name"] = this.name;
         data["origin_country"] = this.origin_country;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface IProductionCompany {
+export interface IProductionCompany extends IAuditableEntity {
     id?: number;
     logo_path?: string | undefined;
     name?: string | undefined;
     origin_country?: string | undefined;
 }
 
-export class ProductionInfo implements IProductionInfo {
+export class ProductionInfo extends AuditableEntity implements IProductionInfo {
     iso_3166_1?: string | undefined;
     name?: string | undefined;
 
     constructor(data?: IProductionInfo) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.iso_3166_1 = _data["iso_3166_1"];
             this.name = _data["name"];
@@ -1248,29 +1273,26 @@ export class ProductionInfo implements IProductionInfo {
         data = typeof data === 'object' ? data : {};
         data["iso_3166_1"] = this.iso_3166_1;
         data["name"] = this.name;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface IProductionInfo {
+export interface IProductionInfo extends IAuditableEntity {
     iso_3166_1?: string | undefined;
     name?: string | undefined;
 }
 
-export class Language implements ILanguage {
+export class Language extends AuditableEntity implements ILanguage {
     iso_639_1?: string | undefined;
     name?: string | undefined;
 
     constructor(data?: ILanguage) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.iso_639_1 = _data["iso_639_1"];
             this.name = _data["name"];
@@ -1288,11 +1310,12 @@ export class Language implements ILanguage {
         data = typeof data === 'object' ? data : {};
         data["iso_639_1"] = this.iso_639_1;
         data["name"] = this.name;
+        super.toJSON(data);
         return data; 
     }
 }
 
-export interface ILanguage {
+export interface ILanguage extends IAuditableEntity {
     iso_639_1?: string | undefined;
     name?: string | undefined;
 }

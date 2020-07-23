@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using GeekFix.Domain.Common;
 
 namespace GeekFix.Domain.Entities.Detailed
 {
-  public class MovieInfo
+  public class MovieInfo : AuditableEntity
   {
     public bool adult { get; set; }
     public string backdrop_path { get; set; }

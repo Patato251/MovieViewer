@@ -90,7 +90,7 @@
         }
       }
     },
-    "/api/TmDbData/movie/{id}": {
+    "/api/TmDbData": {
       "get": {
         "tags": [
           "TmDbData"
@@ -99,8 +99,7 @@
         "parameters": [
           {
             "name": "id",
-            "in": "path",
-            "required": true,
+            "in": "query",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -505,299 +504,379 @@
   "components": {
     "schemas": {
       "SearchInfo": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "page": {
-            "type": "integer",
-            "format": "int32"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
           },
-          "total_results": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total_pages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "results": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/SearchResult"
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "page": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "total_results": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "total_pages": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "results": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
             }
           }
-        }
+        ]
       },
       "SearchResult": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "popularity": {
+                "type": "number",
+                "format": "double"
+              },
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "video": {
+                "type": "boolean"
+              },
+              "vote_count": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "vote_average": {
+                "type": "number",
+                "format": "double"
+              },
+              "title": {
+                "type": "string",
+                "nullable": true
+              },
+              "release_date": {
+                "type": "string",
+                "nullable": true
+              },
+              "original_language": {
+                "type": "string",
+                "nullable": true
+              },
+              "original_title": {
+                "type": "string",
+                "nullable": true
+              },
+              "genre_ids": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "backdrop_path": {
+                "type": "string",
+                "nullable": true
+              },
+              "adult": {
+                "type": "boolean"
+              },
+              "overview": {
+                "type": "string",
+                "nullable": true
+              },
+              "poster_path": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "AuditableEntity": {
         "type": "object",
+        "x-abstract": true,
         "additionalProperties": false,
         "properties": {
-          "popularity": {
-            "type": "number",
-            "format": "double"
-          },
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "video": {
-            "type": "boolean"
-          },
-          "vote_count": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "vote_average": {
-            "type": "number",
-            "format": "double"
-          },
-          "title": {
+          "createdBy": {
             "type": "string",
             "nullable": true
           },
-          "release_date": {
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedBy": {
             "type": "string",
             "nullable": true
           },
-          "original_language": {
+          "lastModified": {
             "type": "string",
-            "nullable": true
-          },
-          "original_title": {
-            "type": "string",
-            "nullable": true
-          },
-          "genre_ids": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          "backdrop_path": {
-            "type": "string",
-            "nullable": true
-          },
-          "adult": {
-            "type": "boolean"
-          },
-          "overview": {
-            "type": "string",
-            "nullable": true
-          },
-          "poster_path": {
-            "type": "string",
+            "format": "date-time",
             "nullable": true
           }
         }
       },
       "MovieInfo": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "adult": {
-            "type": "boolean"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
           },
-          "backdrop_path": {
-            "type": "string",
-            "nullable": true
-          },
-          "belongs_to_collection": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CollectionInfo"
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "adult": {
+                "type": "boolean"
+              },
+              "backdrop_path": {
+                "type": "string",
+                "nullable": true
+              },
+              "belongs_to_collection": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CollectionInfo"
+                  }
+                ]
+              },
+              "budget": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "genres": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/Genre"
+                }
+              },
+              "homepage": {
+                "type": "string",
+                "nullable": true
+              },
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "imdb_id": {
+                "type": "string",
+                "nullable": true
+              },
+              "original_language": {
+                "type": "string",
+                "nullable": true
+              },
+              "original_title": {
+                "type": "string",
+                "nullable": true
+              },
+              "overview": {
+                "type": "string",
+                "nullable": true
+              },
+              "popularity": {
+                "type": "number",
+                "format": "double"
+              },
+              "poster_path": {
+                "type": "string",
+                "nullable": true
+              },
+              "production_companies": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/ProductionCompany"
+                }
+              },
+              "production_countries": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/ProductionInfo"
+                }
+              },
+              "release_date": {
+                "type": "string",
+                "nullable": true
+              },
+              "revenue": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "runtime": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "spoken_languages": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/Language"
+                }
+              },
+              "status": {
+                "type": "string",
+                "nullable": true
+              },
+              "tagline": {
+                "type": "string",
+                "nullable": true
+              },
+              "title": {
+                "type": "string",
+                "nullable": true
+              },
+              "video": {
+                "type": "boolean"
+              },
+              "vote_average": {
+                "type": "number",
+                "format": "double"
+              },
+              "vote_count": {
+                "type": "integer",
+                "format": "int32"
               }
-            ]
-          },
-          "budget": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "genres": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/Genre"
             }
-          },
-          "homepage": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "imdb_id": {
-            "type": "string",
-            "nullable": true
-          },
-          "original_language": {
-            "type": "string",
-            "nullable": true
-          },
-          "original_title": {
-            "type": "string",
-            "nullable": true
-          },
-          "overview": {
-            "type": "string",
-            "nullable": true
-          },
-          "popularity": {
-            "type": "number",
-            "format": "double"
-          },
-          "poster_path": {
-            "type": "string",
-            "nullable": true
-          },
-          "production_companies": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/ProductionCompany"
-            }
-          },
-          "production_countries": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/ProductionInfo"
-            }
-          },
-          "release_date": {
-            "type": "string",
-            "nullable": true
-          },
-          "revenue": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "runtime": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "spoken_languages": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/Language"
-            }
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "tagline": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "video": {
-            "type": "boolean"
-          },
-          "vote_average": {
-            "type": "number",
-            "format": "double"
-          },
-          "vote_count": {
-            "type": "integer",
-            "format": "int32"
           }
-        }
+        ]
       },
       "CollectionInfo": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
           },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "poster_path": {
-            "type": "string",
-            "nullable": true
-          },
-          "backdrop_path": {
-            "type": "string",
-            "nullable": true
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              },
+              "poster_path": {
+                "type": "string",
+                "nullable": true
+              },
+              "backdrop_path": {
+                "type": "string",
+                "nullable": true
+              }
+            }
           }
-        }
+        ]
       },
       "Genre": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
           },
-          "name": {
-            "type": "string",
-            "nullable": true
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              }
+            }
           }
-        }
+        ]
       },
       "ProductionCompany": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
           },
-          "logo_path": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "origin_country": {
-            "type": "string",
-            "nullable": true
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "logo_path": {
+                "type": "string",
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              },
+              "origin_country": {
+                "type": "string",
+                "nullable": true
+              }
+            }
           }
-        }
+        ]
       },
       "ProductionInfo": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "iso_3166_1": {
-            "type": "string",
-            "nullable": true
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
           },
-          "name": {
-            "type": "string",
-            "nullable": true
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "iso_3166_1": {
+                "type": "string",
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              }
+            }
           }
-        }
+        ]
       },
       "Language": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "iso_639_1": {
-            "type": "string",
-            "nullable": true
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
           },
-          "name": {
-            "type": "string",
-            "nullable": true
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "iso_639_1": {
+                "type": "string",
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              }
+            }
           }
-        }
+        ]
       },
       "CreateTodoItemCommand": {
         "type": "object",

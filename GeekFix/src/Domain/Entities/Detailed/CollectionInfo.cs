@@ -1,6 +1,8 @@
+using GeekFix.Domain.Common;
+
 namespace GeekFix.Domain.Entities.Detailed
 {
-  public class CollectionInfo
+  public class CollectionInfo : AuditableEntity
   {
     public int id { get; set; }
     public string name { get; set; }
