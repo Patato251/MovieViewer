@@ -1,0 +1,110 @@
+{
+  "adult": false,
+  "backdrop_path": "/5fiqJTC391BU5qv90Tj9Xd1TyEt.jpg",
+  "belongs_to_collection": {
+    "id": 212562,
+    "name": "Jump Street Collection",
+    "poster_path": "/n2YH0R0TK5g5APvWwBhhdGDR6BM.jpg",
+    "backdrop_path": "/iiAbTNYXpMadPDH4MkjUoJzcGn4.jpg"
+  },
+  "budget": 50000000,
+  "genres": [
+    {
+      "id": 80,
+      "name": "Crime"
+    },
+    {
+      "id": 35,
+      "name": "Comedy"
+    },
+    {
+      "id": 28,
+      "name": "Action"
+    }
+  ],
+  "homepage": "http://www.22jumpstreetmovie.com",
+  "id": 187017,
+  "imdb_id": "tt2294449",
+  "original_language": "en",
+  "original_title": "22 Jump Street",
+  "overview": "After making their way through high school (twice), big changes are in store for officers Schmidt and Jenko when they go deep undercover at a local college. But when Jenko meets a kindred spirit on the football team, and Schmidt infiltrates the bohemian art major scene, they begin to question their partnership. Now they don't have to just crack the case - they have to figure out if they can have a mature relationship. If these two overgrown adolescents can grow from freshmen into real men, college might be the best thing that ever happened to them.",
+  "popularity": 17.82,
+  "poster_path": "/ajB6cGvoy04438RzvfO6Sz28yMK.jpg",
+  "production_companies": [
+    {
+      "id": 5,
+      "logo_path": "/71BqEFAF4V3qjjMPCpLuyJFB9A.png",
+      "name": "Columbia Pictures",
+      "origin_country": "US"
+    },
+    {
+      "id": 333,
+      "logo_path": "/5xUJfzPZ8jWJUDzYtIeuPO4qPIa.png",
+      "name": "Original Film",
+      "origin_country": "US"
+    },
+    {
+      "id": 2531,
+      "logo_path": "/pC2iDCDCvV85vOBP7a5Ukxuc0Du.png",
+      "name": "MRC",
+      "origin_country": "US"
+    },
+    {
+      "id": 34034,
+      "logo_path": null,
+      "name": "LStar Capital",
+      "origin_country": "US"
+    },
+    {
+      "id": 21,
+      "logo_path": "/mjofSXiHpG5t6KYmU4l4FrUhT7m.png",
+      "name": "Metro-Goldwyn-Mayer",
+      "origin_country": "US"
+    },
+    {
+      "id": 5585,
+      "logo_path": null,
+      "name": "Stephen J. Cannell Productions",
+      "origin_country": ""
+    },
+    {
+      "id": 119381,
+      "logo_path": null,
+      "name": "Storyville",
+      "origin_country": ""
+    },
+    {
+      "id": 119382,
+      "logo_path": null,
+      "name": "75 Year Plan Productions",
+      "origin_country": ""
+    },
+    {
+      "id": 34,
+      "logo_path": "/GagSvqWlyPdkFHMfQ3pNq6ix9P.png",
+      "name": "Sony Pictures",
+      "origin_country": "US"
+    }
+  ],
+  "production_countries": [
+    {
+      "iso_3166_1": "US",
+      "name": "United States of America"
+    }
+  ],
+  "release_date": "2014-06-05",
+  "revenue": 188441614,
+  "runtime": 112,
+  "spoken_languages": [
+    {
+      "iso_639_1": "en",
+      "name": "English"
+    }
+  ],
+  "status": "Released",
+  "tagline": "They're not 21 anymore",
+  "title": "22 Jump Street",
+  "video": false,
+  "vote_average": 6.9,
+  "vote_count": 5907
+}
