@@ -27,15 +27,10 @@ namespace GeekFix.Application.UnitTests.CachingTests
       var expectedId = 187017;
 
       // Expected Result
-      var path = System.IO.Directory.GetCurrentDirectory();
-      string convertedString = System.IO.File.ReadAllText(Path.Combine(path, @"../../../CachingTests/movie187017.json"));
-      MovieInfo expectedResult = JsonConvert.DeserializeObject<MovieInfo>(convertedString);
+      MovieInfo expectedResult = FileConversion();
 
       // Mock Setup
-      var tmdbMock = new Mock<ITmDbData>();
-      tmdbMock.Setup(m => m.CallApiMovie(expectedId)).Returns(expectedResult);
-
-      var testClass = new MovieCacheHandler(tmdbMock.Object, 25, 5, 20);
+      var testClass = TmDbServiceMock(expectedResult, expectedId);
 
       // Act
       CachedMovieDetails testCache = testClass.GetSingleMovie(expectedId); // Ref = 1
@@ -56,15 +51,10 @@ namespace GeekFix.Application.UnitTests.CachingTests
       var expectedId = 187017;
 
       // Expected Result
-      var path = System.IO.Directory.GetCurrentDirectory();
-      string convertedString = System.IO.File.ReadAllText(Path.Combine(path, @"../../../CachingTests/movie187017.json"));
-      MovieInfo expectedResult = JsonConvert.DeserializeObject<MovieInfo>(convertedString);
+      MovieInfo expectedResult = FileConversion();
 
       // Mock Setup
-      var tmdbMock = new Mock<ITmDbData>();
-      tmdbMock.Setup(m => m.CallApiMovie(expectedId)).Returns(expectedResult);
-
-      var testClass = new MovieCacheHandler(tmdbMock.Object, 25, 5, 20);
+      var testClass = TmDbServiceMock(expectedResult, expectedId);
 
       // Act
       CachedMovieDetails testCache = testClass.GetSingleMovie(expectedId); // Ref = 1
@@ -84,17 +74,14 @@ namespace GeekFix.Application.UnitTests.CachingTests
       var expectedId = 187017;
 
       // Expected Result
-      var path = System.IO.Directory.GetCurrentDirectory();
-      string convertedString = System.IO.File.ReadAllText(Path.Combine(path, @"../../../CachingTests/movie187017.json"));
-      MovieInfo expectedResult = JsonConvert.DeserializeObject<MovieInfo>(convertedString);
+      MovieInfo expectedResult = FileConversion();
 
-      var tmdbMock = new Mock<ITmDbData>();
-      tmdbMock.Setup(m => m.CallApiMovie(expectedId)).Returns(expectedResult);
-      var testClass = new MovieCacheHandler(tmdbMock.Object, 25, 5, 20);
+      // Mock Setup
+      var testClass = TmDbServiceMock(expectedResult, expectedId);
 
       // Act
       CachedMovieDetails testCache = testClass.GetSingleMovie(expectedId); // Ref = 1
-      
+
       testClass.RemoveMovieFromCache(expectedId);
 
       // Assert
@@ -106,9 +93,6 @@ namespace GeekFix.Application.UnitTests.CachingTests
     public void TestCache_PruneElementsFromCache_RemovesAllElementsAfterMinRequirements()
     {
       // Call add movie method into cache with altered Id's to have up to 5 unique entries
-      
-      
-
 
     }
 
@@ -135,6 +119,25 @@ namespace GeekFix.Application.UnitTests.CachingTests
     public void TestCache_CheckSortOrder_ReturnsTrueWhenSortedDescendingOrder()
     {
 
+    }
+
+
+    private MovieInfo FileConversion()
+    {
+      var path = System.IO.Directory.GetCurrentDirectory();
+      string convertedString = System.IO.File.ReadAllText(Path.Combine(path, @"../../../CachingTests/movie187017.json"));
+      MovieInfo convertedFile = JsonConvert.DeserializeObject<MovieInfo>(convertedString);
+
+      return convertedFile;
+    }
+
+    private MovieCacheHandler TmDbServiceMock(MovieInfo expectedResult, int expectedId)
+    {
+      var tmdbMock = new Mock<ITmDbData>();
+      tmdbMock.Setup(m => m.CallApiMovie(expectedId)).Returns(expectedResult);
+      var testClass = new MovieCacheHandler(tmdbMock.Object, 25, 5, 20);
+
+      return testClass;
     }
   }
 }

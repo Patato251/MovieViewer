@@ -22,7 +22,7 @@ namespace GeekFix.Infrastructure.Repository
       MinPruneCount = min;
       PruneTimer = timer;
     }
-    Dictionary<int, CachedMovieDetails> _cache = new Dictionary<int, CachedMovieDetails>();
+    static Dictionary<int, CachedMovieDetails> _cache = new Dictionary<int, CachedMovieDetails>();
 
     public CachedMovieDetails GetSingleMovie(int id)
     {
@@ -97,7 +97,14 @@ namespace GeekFix.Infrastructure.Repository
 
     public int CheckReferenceCount(int id)
     {
-      return _cache[id].referenceCount;
+      if (_cache.ContainsKey(id))
+      {
+        return _cache[id].referenceCount;
+      }
+      else
+      {
+        return 0;
+      }
     }
   }
 }
