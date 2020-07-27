@@ -13,6 +13,20 @@ namespace TestProj.API.Controllers
   [ApiController]
   public class ValuesController : ControllerBase
   {
+    public class TestClass
+    {
+      public int id { get; set; }
+      public int reference { get; set; }
+    }
+
+    //////////////////////////////////////////
+    private TestClass one = new TestClass();
+    private TestClass two = new TestClass();
+    private TestClass five = new TestClass();
+    private TestClass eight = new TestClass();
+    private TestClass ten = new TestClass();
+    private TestClass six = new TestClass();
+    //////////////////////////////////////////
     private readonly IValuesRespository _repo;
     private readonly IConfiguration _configuration;
 
@@ -52,13 +66,39 @@ namespace TestProj.API.Controllers
 
       return Ok(specific);
 
-    } 
+    }
 
     // POST api/values
-    [HttpPost]
-    public void Post([FromBody] string value)
+    [HttpGet("list")]
+    public IActionResult TestShowDict()
     {
-      
+      Dictionary<int, TestClass> dict = new Dictionary<int, TestClass>();
+
+      one.id = 1;
+      two.id = 2;
+      ten.id = 10;
+      five.id = 5;
+      eight.id = 8;
+      six.id = 6;
+
+      one.reference = 1;
+      two.reference = 2;
+      ten.reference = 10;
+      five.reference = 5;
+      eight.reference = 8;
+      six.reference = 6;
+
+      dict.Add(1, one);
+      dict.Add(2, two);
+      dict.Add(10, ten);
+      dict.Add(5, five);
+      dict.Add(8, eight);
+      dict.Add(6, six);
+
+      dict.OrderByDescending(key => key.Value.reference);
+
+      dict = dict.Take(4).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+      return Ok(dict);
     }
   }
 }
