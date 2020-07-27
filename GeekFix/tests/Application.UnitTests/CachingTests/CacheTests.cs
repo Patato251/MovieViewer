@@ -142,7 +142,7 @@ namespace GeekFix.Application.UnitTests.CachingTests
       CachedMovieDetails testCache5 = testClass.GetSingleMovie(5);
 
 
-
+      testClass.Should().NotBeNull();
       testClass.CheckCacheCount().Should().Be(3);
     }
 
