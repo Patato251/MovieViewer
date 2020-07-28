@@ -11,14 +11,16 @@ namespace GeekFix.Infrastructure.Repository
   public class MovieCacheHandler : IMovieCacheHandler
   {
     private readonly ITmDbData _data;
-    private int maxPruneCount;
-    private int minPruneCount;
-    private int pruneTimer;
+    private int maxPruneCount = 10;
+    private int minPruneCount = 5;
+    private int pruneTimer = 20;
 
-    public MovieCacheHandler(ITmDbData data, int max=20, int min=10, int timer=60)
+    public MovieCacheHandler(ITmDbData data)
     {
       _data = data;
-      Init(max, min, timer);
+      
+      // if (maxPruneCount == 0 && minPruneCount == 0 && timer == 0 )
+      //   Init(max, min, timer);
     }
 
     public void Init(int max, int min, int timer)

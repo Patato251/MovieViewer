@@ -59,16 +59,20 @@ namespace GeekFix.Application.UnitTests.CachingTests
 
       // Mock Setup
       var testMock = TmDbServiceMock(expectedResult, expectedId, 10, 5);
-      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 20);
+      var testClass = new MovieCacheHandler(testMock.Object);
 
       // Act
       CachedMovieDetails testCache = testClass.GetSingleMovie(expectedId); // Ref = 1
       testCache = testClass.GetSingleMovie(expectedId); // Ref = 2
+      testCache = testClass.GetSingleMovie(expectedId); // Ref = 3
+      testCache = testClass.GetSingleMovie(expectedId); // Ref = 4
+      testCache = testClass.GetSingleMovie(expectedId); // Ref = 5
+      testCache = testClass.GetSingleMovie(expectedId); // Ref = 6
 
       // Assert
       testCache.Should().NotBeNull();
       testClass.CheckCacheCount().Should().Be(1);
-      testClass.CheckReferenceCount(expectedId).Should().Be(2);
+      testClass.CheckReferenceCount(expectedId).Should().Be(6);
     }
 
     // Cache remove a single entry
@@ -84,7 +88,7 @@ namespace GeekFix.Application.UnitTests.CachingTests
 
       // Mock Setup
       var testMock = TmDbServiceMock(expectedResult, expectedId, 10, 5);
-      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 20);
+      var testClass = new MovieCacheHandler(testMock.Object);
 
       // Act
       CachedMovieDetails testCache = testClass.GetSingleMovie(expectedId); // Ref = 1
@@ -106,7 +110,7 @@ namespace GeekFix.Application.UnitTests.CachingTests
 
       // Setup mock for multiple files
       var testMock = TmDbMultiServiceMock(expectedResult, 10, 3);
-      var testClass = new MovieCacheHandler(testMock.Object, 10, 3, 20);
+      var testClass = new MovieCacheHandler(testMock.Object);
 
       CachedMovieDetails testCache1 = testClass.GetSingleMovie(1);
       CachedMovieDetails testCache2 = testClass.GetSingleMovie(2);
@@ -127,7 +131,7 @@ namespace GeekFix.Application.UnitTests.CachingTests
 
       // Setup mock for multiple files
       var testMock = TmDbMultiServiceMock(expectedResult, 10, 3);
-      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 10);
+      var testClass = new MovieCacheHandler(testMock.Object);
       
       // Act
       CachedMovieDetails testCache1 = testClass.GetSingleMovie(1);
@@ -150,7 +154,10 @@ namespace GeekFix.Application.UnitTests.CachingTests
 
       // Setup mock for multiple files
       var testMock = TmDbMultiServiceMock(expectedResult, 10, 3);
-      var testClass = new MovieCacheHandler(testMock.Object, 4, 3, 20);
+      var testClass = new MovieCacheHandler(testMock.Object);
+
+      testClass.ChangeMinCacheSize(3);
+      testClass.ChangeMaxCacheSize(4);
 
       CachedMovieDetails testCache1 = testClass.GetSingleMovie(1);
       testCache1 = testClass.GetSingleMovie(1);
@@ -180,7 +187,7 @@ namespace GeekFix.Application.UnitTests.CachingTests
       // Mock Setup
       MovieInfo randomResult = FileConversion();
       var testMock = TmDbServiceMock(randomResult, 187017, 10, 5);
-      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 20); // Max size 20
+      var testClass = new MovieCacheHandler(testMock.Object); // Max size 20
 
       testClass.ChangeMaxCacheSize(newCacheSize);
 
@@ -196,7 +203,7 @@ namespace GeekFix.Application.UnitTests.CachingTests
       // Mock Setup
       MovieInfo randomResult = FileConversion();
       var testMock = TmDbServiceMock(randomResult, 187017, 10, 5);
-      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 20); // Max size 20
+      var testClass = new MovieCacheHandler(testMock.Object); // Max size 20
 
       testClass.ChangeMinCacheSize(newKeepSize);
 
