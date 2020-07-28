@@ -18,7 +18,8 @@ namespace GeekFix.Application.UnitTests.CachingTests
     [SetUp]
     public void Init()
     {
-
+      var testClass = new MovieCacheHandler(null);
+      testClass.ClearMovieCache();
     }
 
     // Cache Adding a single entry, check if entry has correct properties and values
@@ -34,7 +35,7 @@ namespace GeekFix.Application.UnitTests.CachingTests
 
       // Mock Setup
       var testMock = TmDbServiceMock(expectedResult, expectedId, 10, 5);
-      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 20);
+      var testClass = new MovieCacheHandler(testMock.Object);
 
       // Act
       CachedMovieDetails testCache = testClass.GetSingleMovie(expectedId); // Ref = 1
@@ -116,15 +117,40 @@ namespace GeekFix.Application.UnitTests.CachingTests
       testClass.CheckCacheCount().Should().Be(5);
     }
 
+    // Cache Clear all entries within the cache
+    [Test]
+    public void TestCache_ClearAllElements_RemovesAllElements()
+    {
+      // Arrange
+      // Expected Result
+      MovieInfo expectedResult = FileConversion();
+
+      // Setup mock for multiple files
+      var testMock = TmDbMultiServiceMock(expectedResult, 10, 3);
+      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 10);
+      
+      // Act
+      CachedMovieDetails testCache1 = testClass.GetSingleMovie(1);
+      CachedMovieDetails testCache2 = testClass.GetSingleMovie(2);
+      CachedMovieDetails testCache3 = testClass.GetSingleMovie(3);
+      CachedMovieDetails testCache4 = testClass.GetSingleMovie(4);
+      CachedMovieDetails testCache5 = testClass.GetSingleMovie(5);
+      
+      testClass.ClearMovieCache();
+      // Assert
+      testClass.CheckCacheCount().Should().Be(0);
+    }
+
     // Cache prune all entries below a certain threshold
-    public void TestCache_PruneElementsFromCache_RemovesAllElementsAfterMinRequirements()
+    [Test]
+    public void TestCache_PruneElementsFromCache_RemovesElementsAfterMinKeepAndAddsNewElement()
     {
       // Expected Result
       MovieInfo expectedResult = FileConversion();
 
       // Setup mock for multiple files
       var testMock = TmDbMultiServiceMock(expectedResult, 10, 3);
-      var testClass = new MovieCacheHandler(testMock.Object, 5, 3, 20);
+      var testClass = new MovieCacheHandler(testMock.Object, 4, 3, 20);
 
       CachedMovieDetails testCache1 = testClass.GetSingleMovie(1);
       testCache1 = testClass.GetSingleMovie(1);
@@ -141,34 +167,40 @@ namespace GeekFix.Application.UnitTests.CachingTests
       CachedMovieDetails testCache4 = testClass.GetSingleMovie(4);
       CachedMovieDetails testCache5 = testClass.GetSingleMovie(5);
 
-
       testClass.Should().NotBeNull();
-      testClass.CheckCacheCount().Should().Be(3);
+      testClass.CheckCacheCount().Should().Be(4);
     }
 
-    // Cache check for size status of cache if exceeds maximum cache size
-    [Test]
-    public void TestCache_CheckMaxSizeExceeded_ReturnsTrueWhenExceedingMax()
-    {
-
-    }
     // Cache Edit max allowable cache size
     [Test]
     public void TestCache_AlterMaxCacheSize_ChangesMaxAcceptableSize()
     {
+      int newCacheSize = 20;
 
+      // Mock Setup
+      MovieInfo randomResult = FileConversion();
+      var testMock = TmDbServiceMock(randomResult, 187017, 10, 5);
+      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 20); // Max size 20
+
+      testClass.ChangeMaxCacheSize(newCacheSize);
+
+      testClass.CheckMaxCacheSize().Should().Be(newCacheSize);
     }
-    // Cache Adding existing/duplicate element
-    [Test]
-    public void TestCache_AddExistingCacheElement_IncrementElementReferenceCount()
-    {
 
-    }
-    // Cache Sort by popularity of elements
+    // Cache Edit number of elements to store after pruning of cache
     [Test]
-    public void TestCache_CheckSortOrder_ReturnsTrueWhenSortedDescendingOrder()
+    public void TestCache_AlterMinKeepCacheSize_ChangesElementsKeptSize()
     {
+      int newKeepSize = 20;
 
+      // Mock Setup
+      MovieInfo randomResult = FileConversion();
+      var testMock = TmDbServiceMock(randomResult, 187017, 10, 5);
+      var testClass = new MovieCacheHandler(testMock.Object, 10, 5, 20); // Max size 20
+
+      testClass.ChangeMinCacheSize(newKeepSize);
+
+      testClass.CheckMinCacheSize().Should().Be(newKeepSize);
     }
 
     private MovieInfo FileConversion()

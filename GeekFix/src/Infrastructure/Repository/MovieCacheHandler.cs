@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GeekFix.Application.Common.Interfaces;
@@ -10,18 +11,25 @@ namespace GeekFix.Infrastructure.Repository
   public class MovieCacheHandler : IMovieCacheHandler
   {
     private readonly ITmDbData _data;
+    private int maxPruneCount;
+    private int minPruneCount;
+    private int pruneTimer;
 
-    static int MaxPruneCount;
-    static int MinPruneCount;
-    static int PruneTimer;
-
-    public MovieCacheHandler(ITmDbData data, int max, int min, int timer)
+    public MovieCacheHandler(ITmDbData data, int max=20, int min=10, int timer=60)
     {
       _data = data;
-      MaxPruneCount = max;
-      MinPruneCount = min;
-      PruneTimer = timer;
+      Init(max, min, timer);
     }
+
+    public void Init(int max, int min, int timer)
+    {
+      if (min < 0) throw new ArgumentOutOfRangeException("Appropriate message");
+      if (max < 0 || max <= min) throw new ArgumentOutOfRangeException();
+      maxPruneCount = max;
+      minPruneCount = min;
+      pruneTimer = timer;
+    }
+
     static Dictionary<int, CachedMovieDetails> _cache = new Dictionary<int, CachedMovieDetails>();
 
     public CachedMovieDetails GetSingleMovie(int id)
@@ -38,28 +46,28 @@ namespace GeekFix.Infrastructure.Repository
       {
         // Call Api and grab Movieinfo object
         CachedMovieDetails movieObject = new CachedMovieDetails();
-        movieObject = AddMovieToCache(id);
+        movieObject = MapMovieToCache(id);
         _cache.Add(movieObject.movieInfo.id, movieObject);
         return _cache[id];
       }
     }
 
-    public CachedMovieDetails AddMovieToCache(int id)
+    public CachedMovieDetails MapMovieToCache(int id)
     {
-      CachedMovieDetails addedMovie = new CachedMovieDetails();
+      CachedMovieDetails mappedMovie = new CachedMovieDetails();
       // Check if the max prune limit has been reached
-      if (_cache.Count > MaxPruneCount)
+      if (_cache.Count >= maxPruneCount)
       {
         // Prune the cache
-        PruneMoviesFromCache(MinPruneCount);
+        PruneMoviesFromCache(minPruneCount);
       }
       // Under max prune limit, add the object into the list
       // Call the Api Method for Movie identification obtaining and grab the object
       var copiedMovie = _data.CallApiMovie(id);
       // Map Details for adding into cache
-      addedMovie = MapMovieDetails(copiedMovie);
+      mappedMovie = MapMovieDetails(copiedMovie);
 
-      return addedMovie;
+      return mappedMovie;
     }
 
     public CachedMovieDetails MapMovieDetails(MovieInfo copiedMovie)
@@ -76,6 +84,17 @@ namespace GeekFix.Infrastructure.Repository
     {
       // Determine the Top 10 movies according to reference count and keep in cache
       var keysToRemove = _cache.OrderByDescending(k => k.Value.referenceCount).Skip(MinPruneCount);
+
+      // Repeatedly call remove from cache function
+      foreach (var element in keysToRemove)
+      {
+        RemoveMovieFromCache(element.Key);
+      }
+    }
+
+    public void ClearMovieCache()
+    {
+      var keysToRemove = _cache.OrderByDescending(k => k.Value.referenceCount);
 
       // Repeatedly call remove from cache function
       foreach (var element in keysToRemove)
@@ -105,6 +124,26 @@ namespace GeekFix.Infrastructure.Repository
       {
         return 0;
       }
+    }
+
+    public void ChangeMaxCacheSize(int newSize)
+    {
+      maxPruneCount = newSize;
+    }
+
+    public int CheckMaxCacheSize()
+    {
+      return maxPruneCount;
+    }
+
+    public void ChangeMinCacheSize(int newSize)
+    {
+      minPruneCount = newSize;
+    }
+
+    public int CheckMinCacheSize()
+    {
+      return minPruneCount;
     }
   }
 }

@@ -33,7 +33,7 @@ namespace GeekFix.WebUI.Controllers
     }
 
     // Get a specific movie according to Id
-    [HttpGet("movie/{id}")]
+    [HttpGet("detailed/movie/{id}")]
     public MovieInfo GetMovie(int id)
     {
       MovieInfo movieResult = _data.CallApiMovie(id);

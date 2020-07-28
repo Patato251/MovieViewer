@@ -6,6 +6,38 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/MovieCache/movie/{id}": {
+      "get": {
+        "tags": [
+          "MovieCache"
+        ],
+        "operationId": "MovieCache_GetMovie",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CachedMovieDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/TmDbData/discover/{searchtext}/{page}": {
       "get": {
         "tags": [
@@ -90,7 +122,7 @@
         }
       }
     },
-    "/api/TmDbData": {
+    "/api/TmDbData/detailed/movie/{id}": {
       "get": {
         "tags": [
           "TmDbData"
@@ -99,7 +131,8 @@
         "parameters": [
           {
             "name": "id",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -503,130 +536,21 @@
   },
   "components": {
     "schemas": {
-      "SearchInfo": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/AuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "page": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "total_results": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "total_pages": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "results": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "$ref": "#/components/schemas/SearchResult"
-                }
-              }
-            }
-          }
-        ]
-      },
-      "SearchResult": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/AuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "popularity": {
-                "type": "number",
-                "format": "double"
-              },
-              "id": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "video": {
-                "type": "boolean"
-              },
-              "vote_count": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "vote_average": {
-                "type": "number",
-                "format": "double"
-              },
-              "title": {
-                "type": "string",
-                "nullable": true
-              },
-              "release_date": {
-                "type": "string",
-                "nullable": true
-              },
-              "original_language": {
-                "type": "string",
-                "nullable": true
-              },
-              "original_title": {
-                "type": "string",
-                "nullable": true
-              },
-              "genre_ids": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "backdrop_path": {
-                "type": "string",
-                "nullable": true
-              },
-              "adult": {
-                "type": "boolean"
-              },
-              "overview": {
-                "type": "string",
-                "nullable": true
-              },
-              "poster_path": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "AuditableEntity": {
+      "CachedMovieDetails": {
         "type": "object",
-        "x-abstract": true,
         "additionalProperties": false,
         "properties": {
-          "createdBy": {
-            "type": "string",
-            "nullable": true
+          "referenceCount": {
+            "type": "integer",
+            "format": "int32"
           },
-          "created": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lastModifiedBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastModified": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
+          "movieInfo": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/MovieInfo"
+              }
+            ]
           }
         }
       },
@@ -786,6 +710,30 @@
           }
         ]
       },
+      "AuditableEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
       "Genre": {
         "allOf": [
           {
@@ -871,6 +819,109 @@
                 "nullable": true
               },
               "name": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "SearchInfo": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "page": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "total_results": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "total_pages": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "results": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SearchResult": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "popularity": {
+                "type": "number",
+                "format": "double"
+              },
+              "id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "video": {
+                "type": "boolean"
+              },
+              "vote_count": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "vote_average": {
+                "type": "number",
+                "format": "double"
+              },
+              "title": {
+                "type": "string",
+                "nullable": true
+              },
+              "release_date": {
+                "type": "string",
+                "nullable": true
+              },
+              "original_language": {
+                "type": "string",
+                "nullable": true
+              },
+              "original_title": {
+                "type": "string",
+                "nullable": true
+              },
+              "genre_ids": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "backdrop_path": {
+                "type": "string",
+                "nullable": true
+              },
+              "adult": {
+                "type": "boolean"
+              },
+              "overview": {
+                "type": "string",
+                "nullable": true
+              },
+              "poster_path": {
                 "type": "string",
                 "nullable": true
               }

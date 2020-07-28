@@ -10,10 +10,11 @@ namespace GeekFix.Infrastructure.Repository
 {
   public class TmDbData : ITmDbData
   {
+    public TmDbData() { }
     public SearchInfo CallApiDiscover(string searchText, int page)
     {
       int pageNo = Convert.ToInt32(page) == 0 ? 1 : Convert.ToInt32(page);
-      string apiKey = "f68c64ab26f5bb2a81e09f4af4dff582"; //TEMPORARY
+      string apiKey = "f68c64ab26f5bb2a81e09f4af4dff582"; // get this from configuration values
 
       HttpWebRequest apiRequest = WebRequest.Create("https://api.themoviedb.org/3/search/discover?api_key=" + apiKey + "&language=en-US&sort_by=" + searchText + "&page=" + pageNo + "&include_adult=false") as HttpWebRequest;
 
