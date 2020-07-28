@@ -211,7 +211,7 @@ export class TmDbDataClient implements ITmDbDataClient {
     }
 
     getMovie(id: number): Observable<MovieInfo> {
-        let url_ = this.baseUrl + "/api/TmDbData/detailed/movie/{id}";
+        let url_ = this.baseUrl + "/api/TmDbData/movie/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id)); 

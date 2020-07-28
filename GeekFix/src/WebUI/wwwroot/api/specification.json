@@ -122,7 +122,7 @@
         }
       }
     },
-    "/api/TmDbData/detailed/movie/{id}": {
+    "/api/TmDbData/movie/{id}": {
       "get": {
         "tags": [
           "TmDbData"
