@@ -23,12 +23,48 @@ namespace GeekFix.WebUI.Controllers
     }
 
     // Change Max Cache Size
-
+    [HttpPost("cachemax/{newSize}")]
+    public string ChangeMaxCache(int newSize)
+    {
+      if (newSize > 0 && newSize > _handler.CheckMinCacheSize())
+      {
+        _handler.ChangeMaxCacheSize(newSize);
+        return ("Cache Size has been successfully changed to " + newSize);
+      }
+      else
+      {
+        return ("The new cache Size is invalid, please try again with a new size");
+      }
+    }
 
     // Change Min Keep Size
+    [HttpPost("cachemin/{newSize}")]
+    public string ChangeMinCache(int newSize)
+    {
+      if (newSize > 0 && newSize < _handler.CheckMaxCacheSize())
+      {
+        _handler.ChangeMinCacheSize(newSize);
+        return ("Tracked Cache Size has been successfully changed to " + newSize);
+      }
+      else
+      {
+        return ("The new tracked Size is invalid, please try again with a new size");
+      }
+    }
 
-     
-    // 
+    // Check Max Cache Size
+    [HttpGet("checkMax")]
+    public string CheckMinCache()
+    {
+      int minSize = _handler.CheckMinCacheSize();
+      return ("The number of kept items after pruning is " + minSize);
+    }
 
+    [HttpGet("checkMin")]
+    public string CheckMaxCache()
+    {
+      int maxSize = _handler.CheckMaxCacheSize();
+      return ("TThe maximum cache size is " + maxSize);
+    }
   }
 }
