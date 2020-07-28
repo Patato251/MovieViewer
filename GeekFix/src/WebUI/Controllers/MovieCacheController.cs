@@ -22,6 +22,13 @@ namespace GeekFix.WebUI.Controllers
       return selectedMovie;
     }
 
-    
+    // Change Max Cache Size
+
+
+    // Change Min Keep Size
+
+     
+    // 
+
   }
 }
