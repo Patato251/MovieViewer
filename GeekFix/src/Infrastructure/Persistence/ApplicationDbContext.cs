@@ -1,6 +1,7 @@
 ﻿using GeekFix.Application.Common.Interfaces;
 using GeekFix.Domain.Common;
 using GeekFix.Domain.Entities;
+using GeekFix.Domain.Entities.MetaData;
 using GeekFix.Infrastructure.Identity;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
@@ -34,7 +35,7 @@ namespace GeekFix.Infrastructure.Persistence
 
     public DbSet<TodoItem> TodoItems { get; set; }
 
-    // public DbSet<Result> Results { get; set; }
+    public DbSet<EmotionList> Emotions { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
     {
@@ -52,7 +53,6 @@ namespace GeekFix.Infrastructure.Persistence
             break;
         }
       }
-
       return base.SaveChangesAsync(cancellationToken);
     }
 

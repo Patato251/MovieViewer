@@ -34,14 +34,14 @@ namespace GeekFix.Infrastructure.Repository
 
     static Dictionary<int, CachedMovieDetails> _cache = new Dictionary<int, CachedMovieDetails>();
 
-    public CachedMovieDetails GetSingleMovie(int id)
+    public MovieInfo GetSingleMovie(int id)
     {
       // Check if the movie exists within the cache database
       // if the movie does exist, grab the movie's details and increment the reference count 
       if (_cache.ContainsKey(id))
       {
         _cache[id].referenceCount++;
-        return _cache[id];
+        return _cache[id].movieInfo;
       }
       // If the movie doesn't exist, grab the movie from the Api and create clone within our database
       else
@@ -50,7 +50,7 @@ namespace GeekFix.Infrastructure.Repository
         CachedMovieDetails movieObject = new CachedMovieDetails();
         movieObject = MapMovieToCache(id);
         _cache.Add(movieObject.movieInfo.id, movieObject);
-        return _cache[id];
+        return _cache[id].movieInfo;
       }
     }
 

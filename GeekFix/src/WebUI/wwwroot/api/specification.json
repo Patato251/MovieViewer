@@ -102,6 +102,46 @@
         }
       }
     },
+    "/api/MovieCache/checkMax": {
+      "get": {
+        "tags": [
+          "MovieCache"
+        ],
+        "operationId": "MovieCache_CheckMinCache",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/MovieCache/checkMin": {
+      "get": {
+        "tags": [
+          "MovieCache"
+        ],
+        "operationId": "MovieCache_CheckMaxCache",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/TmDbData/discover/{searchtext}/{page}": {
       "get": {
         "tags": [
