@@ -8,7 +8,7 @@ using TestProj.API.Models;
 
 namespace TestProj.API.Controllers
 {
-  [Route("movies/[controller]")] //localhost:5000/api/Values
+  [Route("movies/[controller]")] //localhost:5000/movies/TMDB
   [ApiController]
   public class TMDBController : ControllerBase
   {

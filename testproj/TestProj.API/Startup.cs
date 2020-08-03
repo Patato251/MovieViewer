@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using TestProj.API.Data;
+using TestProj.API.Services;
 
 namespace TestProj.API
 {
